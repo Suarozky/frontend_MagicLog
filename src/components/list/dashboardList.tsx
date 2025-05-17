@@ -1,15 +1,7 @@
 // components/ProductList.tsx
 import DashboardCard from "../card/dashboardCard";
+import type { Product } from "../../types/products";
 
-interface Product {
-  id: string;
-  name: string;
-  image: string;
-  category: string;
-  price: number;
-  inventory: number;
-  sales: number;
-}
 
 export const DashBoardList = ({ products }: { products: Product[] }) => (
   <div className="bg-white rounded-xl shadow overflow-hidden p-2">

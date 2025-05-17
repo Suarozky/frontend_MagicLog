@@ -2,81 +2,37 @@
 
 import { useEffect, useState } from "react";
 import ProductCard from "../components/card/productCard";
-import {
-  FaListUl,
-  FaThLarge,
-  FaSearch,
-  FaFilter,
-} from "react-icons/fa";
+import { getProducts } from "../api/products";
+import type { Product } from "../types/products";
+import { FaListUl, FaThLarge, FaSearch, FaFilter } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
-type Shoe = {
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-  category: string;
-  rating?: number;
-  imageUrl: string;
-};
-
-const sampleShoes: Shoe[] = [
-  {
-    id: "1",
-    name: "Zapatillas Urbanas",
-    price: 120,
-    description: "Comodidad para el día a día.",
-    category: "Urbano",
-    rating: 4.5,
-    imageUrl: "/product/zapato.svg",
-  },
-  {
-    id: "2",
-    name: "Zapatos de vestir",
-    price: 250,
-    description: "Elegancia y estilo.",
-    category: "Formal",
-    rating: 4.8,
-    imageUrl: "/product/zapato2.svg",
-  },
-  {
-    id: "3",
-    name: "Botines de cuero",
-    price: 300,
-    description: "Duraderos y resistentes.",
-    category: "Casual",
-    rating: 4.2,
-    imageUrl: "/product/zapato3.svg",
-  },
-  {
-    id: "4",
-    name: "Zapatillas deportivas",
-    price: 150,
-    description: "Ideales para entrenar.",
-    category: "Deportivo",
-    rating: 4.6,
-    imageUrl: "/product/zapato4.svg",
-  },
-];
-
-const categories = ["Todos", "Deportivo", "Urbano", "Formal", "Casual"];
+const categories = ["Todos"];
 
 export default function StoreView() {
-  const [products, setProducts] = useState<Shoe[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("destacado");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([
     "Todos",
   ]);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1500]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   useEffect(() => {
-    // Simulamos carga de datos
-    setTimeout(() => {
-      setProducts(sampleShoes);
-    }, 300);
+    const fetchProducts = async () => {
+      try {
+        const response = await getProducts();
+        setProducts(response.products); // importante acceder a response.products
+        console.log("Productos cargados:", response.products);
+        console.log("image" , response.products[5].image);
+      } catch (error) {
+        console.error("Error al cargar productos:", error);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   const handleCategoryChange = (category: string) => {
@@ -97,25 +53,30 @@ export default function StoreView() {
     setSearchTerm("");
     setSortOption("destacado");
     setSelectedCategories(["Todos"]);
-    setPriceRange([0, 500]);
+    setPriceRange([0, 1500]);
   };
 
-  const filteredShoes = products.filter((shoe) => {
-    const matchesSearch = shoe.name
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategories.includes("Todos") ||
-      selectedCategories.includes(shoe.category);
+    // Note: We might need to adjust this if product doesn't have category property
+    // For now I'm commenting this out since the Product type doesn't have a category field
+    // const matchesCategory =
+    //   selectedCategories.includes("Todos") ||
+    //   selectedCategories.includes(product.category);
+    const matchesCategory = selectedCategories.includes("Todos"); // Simplified for now
     const matchesPrice =
-      shoe.price >= priceRange[0] && shoe.price <= priceRange[1];
+      product.price >= priceRange[0] && product.price <= priceRange[1];
 
     return matchesSearch && matchesCategory && matchesPrice;
   });
 
-  const sortedShoes = [...filteredShoes].sort((a, b) => {
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
     if (sortOption === "destacado") {
-      return (b.rating ?? 0) - (a.rating ?? 0);
+      // Note: We might need to adjust this if product doesn't have rating property
+      // For now I'm using 0 as a default since Product type doesn't have a rating field
+      return 0; // No rating in the Product type
     } else if (sortOption === "precio-bajo") {
       return a.price - b.price;
     } else if (sortOption === "precio-alto") {
@@ -124,10 +85,8 @@ export default function StoreView() {
     return 0;
   });
 
-  // Renderizado de estrellas para la calificación
-
   return (
-    <div className="min-h-screen w-full ">
+    <div className="min-h-screen w-full text-black ">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filtros para móvil */}
@@ -215,7 +174,7 @@ export default function StoreView() {
                       <input
                         type="range"
                         min="0"
-                        max="500"
+                        max="1500"
                         step="10"
                         value={priceRange[1]}
                         onChange={(e) =>
@@ -292,7 +251,7 @@ export default function StoreView() {
                   <input
                     type="range"
                     min="0"
-                    max="500"
+                    max="1500"
                     step="10"
                     value={priceRange[1]}
                     onChange={(e) =>
@@ -334,7 +293,7 @@ export default function StoreView() {
                 <div className="relative w-full md:w-1/2">
                   <input
                     type="text"
-                    placeholder="Buscar zapatos..."
+                    placeholder="Buscar productos..."
                     className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring focus:ring-blue-200 focus:ring-opacity-50 outline-none transition-all"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -384,7 +343,7 @@ export default function StoreView() {
             {/* Contador de resultados */}
             <div className="flex justify-between items-center ">
               <p className="text-sm text-gray-600 p-2">
-                {sortedShoes.length} productos encontrados
+                {sortedProducts.length} productos encontrados
               </p>
             </div>
 
@@ -393,7 +352,7 @@ export default function StoreView() {
               <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
               </div>
-            ) : sortedShoes.length > 0 ? (
+            ) : sortedProducts.length > 0 ? (
               <div
                 className={
                   viewMode === "grid"
@@ -402,9 +361,9 @@ export default function StoreView() {
                 }
               >
                 <AnimatePresence>
-                  {sortedShoes.map((shoe) => (
+                  {sortedProducts.map((product) => (
                     <motion.div
-                      key={shoe.id}
+                      key={product.id}
                       layout
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -417,10 +376,11 @@ export default function StoreView() {
                       }
                     >
                       <ProductCard
-                        shoe={shoe}
+                      key={product.id}
+                        product={product}
                         onAddToCart={(id) => {
                           console.log("Agregar al carrito:", id);
-                          // aquí puedes disparar una acción o función de Redux, Zustand, etc.
+                        
                         }}
                       />
                     </motion.div>
