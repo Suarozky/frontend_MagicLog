@@ -1,6 +1,6 @@
 import { toast } from "react-toastify"; // Importamos toast para mostrar notificaciones
 
-export const BASE_URL = "http://localhost:3100/api/v1";
+import { config } from "../config/config";
 export const createCartItem = async (cartItem: {
   productId: number;
   quantity: number;
@@ -16,7 +16,7 @@ export const createCartItem = async (cartItem: {
       throw new Error("Token de autenticación no encontrado en cookies");
     }
 
-    const res = await fetch(`${BASE_URL}/cart-item/create`, {
+    const res = await fetch(`${config.BASE_URL}/cart-item/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,7 +55,7 @@ export const getCartItems = async () => {
       throw new Error("Token de autenticación no encontrado en cookies");
     }
 
-    const res = await fetch(`${BASE_URL}/cart-item`, {
+    const res = await fetch(`${config.BASE_URL}/cart-item`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -98,7 +98,7 @@ export const deleteCartItem = async (cartItemId: number) => {
             throw new Error("El ID del item del carrito debe ser un número válido");
         }
 
-        const res = await fetch(`${BASE_URL}/cart-item/delete`, {
+        const res = await fetch(`${config.BASE_URL}/cart-item/delete`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",

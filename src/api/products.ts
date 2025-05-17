@@ -1,4 +1,4 @@
-export const BASE_URL = "http://localhost:3100/api/v1";
+import { config } from "../config/config";
 import type { ProductData } from "../types/products";
 
 export const getProducts = async () => {
@@ -13,7 +13,7 @@ export const getProducts = async () => {
       throw new Error("Token de autenticación no encontrado en cookies");
     }
 
-    const res = await fetch(`${BASE_URL}/products`, {
+    const res = await fetch(`${config.BASE_URL}/products`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -48,7 +48,7 @@ export const getProductById = async (id: string) => {
       throw new Error("Token de autenticación no encontrado en cookies");
     }
 
-    const res = await fetch(`${BASE_URL}/products/get?id=${id}`, {
+    const res = await fetch(`${config.BASE_URL}/products/get?id=${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -82,7 +82,7 @@ export const getProductsByUserId = async (userId: string) => {
     if (!token) {
       throw new Error("Token de autenticación no encontrado en cookies");
     }
-    const url = new URL(`${BASE_URL}/products/get-by-user`);
+    const url = new URL(`${config.BASE_URL}/products/get-by-user`);
     url.searchParams.append("userId", userId);
 
     const res = await fetch(url.toString(), {
@@ -123,7 +123,7 @@ export const createProduct = async (productData: ProductData) => {
       throw new Error("Token de autenticación no encontrado en cookies");
     }
 
-    const res = await fetch(`${BASE_URL}/products/create`, {
+    const res = await fetch(`${config.BASE_URL}/products/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -160,7 +160,7 @@ export const deleteProduct = async (id: number) => {
       throw new Error("Token de autenticación no encontrado en cookies");
     }
 
-    const res = await fetch(`${BASE_URL}/products/delete?id=${id}`, {
+    const res = await fetch(`${config.BASE_URL}/products/delete?id=${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

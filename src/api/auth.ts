@@ -1,11 +1,12 @@
-export const BASE_URL = "http://localhost:3100/api/v1";
+
 import type { User } from "../types/user";
+import { config } from "../config/config";
 
 export const login = async (email: string, password: string) => {
   try {
     console.log("Intentando iniciar sesión con:", { email, password });
 
-    const res = await fetch(`${BASE_URL}/auth/login`, {
+    const res = await fetch(`${config.BASE_URL}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -36,8 +37,6 @@ export const login = async (email: string, password: string) => {
 };
 
 export const register = async (userData: User) => {
-
-
   try {
     console.log("Intentando registrar usuario:", userData);
 
@@ -52,7 +51,7 @@ export const register = async (userData: User) => {
 
     console.log("Datos formateados para API:", apiData);
 
-    const res = await fetch(`${BASE_URL}/auth/register`, {
+    const res = await fetch(`${config.BASE_URL}/auth/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -89,7 +88,7 @@ export const Profile = async () => {
       throw new Error("Token de autenticación no encontrado en cookies");
     }
 
-    const res = await fetch(`${BASE_URL}/auth/profile`, {
+    const res = await fetch(`${config.BASE_URL}/auth/profile`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
