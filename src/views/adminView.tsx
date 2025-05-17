@@ -262,7 +262,15 @@ export default function AdminView() {
             <DashBoardList
               products={products.map((product) => ({
                 ...product,
-                id: String(product.id),
+                id: (product.id),
+                sku: `SKU-${product.id}`,
+                quantity: product.inventory,
+                createdAt: new Date().toISOString(),
+                user: {
+                  id: "",
+                  name: "",
+                  email: "",
+                },
               }))}
             />
           </div>
